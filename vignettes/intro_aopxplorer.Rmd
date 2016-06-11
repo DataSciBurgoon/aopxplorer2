@@ -1,0 +1,48 @@
+---
+title: "Introduction to AOPXplorer"
+author: "Lyle D. Burgoon"
+date: "June 10, 2016"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{AOPXplorer Vignette}
+  %\VignetteEngine{knitr::rmarkdown}
+---
+
+# The Challenges
+Actually understanding the pathway context of molecular changes is important. But it's difficult. For toxicology, pharmacology and biochemistry, it is important to be able to see how chemicals and the environment change molecular signaling. Perhaps we have a mixture of transcriptomic, metabolomic, proteomic, and high throughput screening assay results, and we want to make sense of all of this information at the same time.
+
+Or maybe our challenge is that we want to figure out how to develop a high throughput screening battery that can predict some disease or adverse outcome. This may be important because we are trying to decrease the number of animal assays required, or we want to use information from adverse outcome pathways (AOPs), but we just don't have the tools to work with those.
+
+This is where the AOPXplorer comes in.
+
+# What Can AOPXplorer Do For Me?
+The AOPXplorer was designed to facilitate analyses of molecular information at the pathway scale. The key motivator is to help people visualize their data and make better informed decisions using biological data. It's that simple.
+
+Here are some user stories that AOPXplorer was designed to tackle:
+
+1. Jim wants to design a screening assay battery for hepatic steatosis, and knows that several different pathways can get him there. Jim can use the AOPXplorer to use network theory to identify just those pathway key events that need to be monitored to infer whether or not a chemical is likely to cause hepatic steatosis.
+
+2. Larry wants to see the changes in gene expression as well as the changes in metabolite levels and how they may interplay within a biological pathway of interest.
+
+3. Bob overlays gene expression data onto the AOP for lung tumorigenesis to predict whether or not his chemical of interest may cause lung cancer.
+
+4. John uses the AOPXplorer to visualize all of the AOPs for fish fecundity as a network.
+
+# Examples
+Before running any of the examples, and really, before running AOPXplorer, make sure you have the following 2 applications running:
+
+1) Cytoscape (v3.4.0 or above)
+
+2) Fuseki
+
+To start Fuseki in Windows: double click the start_fuseki.bat file in the AOXPlorer download file
+
+To start Fuseki
+
+## Example 1: Building an AOP Network (AOPN) for Steatosis
+The AOPXplorer uses the AOP Ontology (AOPO) as its primary data source for AOPs. The AOPO is a community resource that is updated frequently to bring in the latest AOPs from the AOP-Wiki. 
+
+
+
+
+

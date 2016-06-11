@@ -14,3 +14,32 @@ y <- c(10, 4, 3, NA, 2, 1, 1, 1, 1, 1, 1)
 z <- y * 2
 list_data <- as.list(data.frame(t(cbind(y,z))))
 V(x)$data3 <- list_data
+
+
+library(SPARQL)
+library(biomaRt)
+library(org.Hs.eg.db)
+
+
+query = "
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX aop: <http://aopkb.org/aop_ontology#>
+PREFIX bao: <http://www.bioassayontology.org/bao#>
+
+SELECT DISTINCT ?ao ?ke
+WHERE {
+?ao rdfs:subClassOf* aop:AdverseOutcome.
+?ind_ao a ?ao.
+?ind_ao aop:has_inactivated_key_event ?ke.
+?measure_group bao:BAO_0090012 ?ke.
+?bioassay_results bao:BAO_0000209 ?measure_group.
+?bioassay_results aop:has_chem_bio_assay_call ?call.
+?call aop:has_inactivated_key_event ?ke.
+}
+"
+
+r <- SPARQL(url="http://localhost:3030/ds", query=query)
+r$results

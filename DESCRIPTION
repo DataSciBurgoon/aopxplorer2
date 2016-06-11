@@ -1,10 +1,24 @@
 Package: aopxplorer
 Type: Package
-Title: What the Package Does (Title Case)
-Version: 0.1
-Date: 2016-06-06
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
-License: What license is it under?
-LazyData: TRUE
+Title: AOPXplorer
+Version: 1.0.0
+Date: 2016-06-10
+Author: Lyle D. Burgoon <Lyle.D.Burgoon@usace.army.mil>
+Maintainer: Lyle D. Burgoon <Lyle.D.Burgoon@usace.army.mil>
+Description: Provides the ability to query the AOP Ontology for AOPs, analyze
+data within R, and send the AOPs and analyses to Cytoscape -- all from within R.
+License: CC0
+Suggests:
+    RUnit,
+    knitr,
+    rmarkdown
+Imports:
+    SPARQL (>= 1.38.3),
+    biomaRt (>= 0.2.14),
+    igraph (>= 0.7.1),
+    methods,
+    ggplot2 (>= 1.0.1)
+VignetteBuilder: knitr
+LazyData: true
+Collate:
+    'aopxplorer.R'
