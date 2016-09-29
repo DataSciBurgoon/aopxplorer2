@@ -16,8 +16,10 @@
 #' or individual names.
 #'
 #' @examples
+#' \dontrun{
 #' x <- "<http://aopkb.org/aop_ontology#Steatosis>"
 #' trim_results(x)
+#' }
 #'
 #' @export
 trim_results <- function(x){
@@ -32,14 +34,22 @@ trim_results <- function(x){
 #'
 #' This function queries the AOPO for all of the available adverse outcomes.
 #'
+#' @param url a \code{character} object that is the URL to the Fuseki server. The
+#' default is http://localhost:3030/ds
+#'
 #' @return adverse_outcomes a \code{vector} object that only contains the
 #' adverse outcomes currently in the AOPO.
 #'
 #' @examples
+#' \dontrun{
 #' list_adverse_outcomes()
+#' }
+#'
+#'
+#' @importFrom SPARQL SPARQL
 #'
 #' @export
-list_adverse_outcomes <- function(){
+list_adverse_outcomes <- function(url="http://localhost:3030/ds"){
   query = "
   PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
   PREFIX owl: <http://www.w3.org/2002/07/owl#>
@@ -55,7 +65,7 @@ list_adverse_outcomes <- function(){
     ?ind_ao rdfs:label ?ao_label.
   }
   "
-  aos <- SPARQL(url="http://localhost:3030/ds", query=query)
+  aos <- SPARQL(url, query=query)
   adverse_outcomes <- as.vector(t(aos$results[1,]))
   return(adverse_outcomes)
 }
@@ -72,17 +82,25 @@ list_adverse_outcomes <- function(){
 #' @param ao_name an object of class \code{character} that is the name of the
 #' adverse outcome of interest.
 #'
+#' @param url a \code{character} object that is the URL to the Fuseki server. The
+#' default is http://localhost:3030/ds
+#'
 #' @return aopn_graph an \code{igraph} object that contains the AOPN -- a graph
 #' of the key events and their relationships.
 #'
 #' @examples
+#' \dontrun{
 #' x <- get_aopn("Steatosis")
 #' plot(x)
+#' }
 #'
 #' @import igraph
+#' @import RCurl
+#' @import XML
+#' @importFrom SPARQL SPARQL
 #'
 #' @export
-get_aopn <- function(ao_name){
+get_aopn <- function(ao_name, url="http://localhost:3030/ds"){
   query_prefix = "
   PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
   PREFIX owl: <http://www.w3.org/2002/07/owl#>
@@ -103,7 +121,7 @@ get_aopn <- function(ao_name){
     FILTER regex(?ao_label,"
 
   query <- paste(query_prefix, "\"", ao_name, "\",", "\"i\").\n}", sep="")
-  aopn <- SPARQL(url="http://localhost:3030/ds", query=query)
+  aopn <- SPARQL(url, query=query)
   aopn_kes <- apply(aopn$results, 2, trim_results)
   aopn_graph <- graph_from_edgelist(aopn_kes)
   return(aopn_graph)
@@ -119,23 +137,25 @@ get_aopn <- function(ao_name){
 #' @param cytoscape_aopn an object of class \code{character} that is a JSON
 #' encoded AOPN
 #'
-#' @param base.url an object of class \code{character} that is the base URL for
-#' connecting to Cytoscape via CyREST
+#' @param url an object of class \code{character} that is the base URL for
+#' connecting to Cytoscape via CyREST. Default is http://localhost:1234/v1.
 #'
-#' @return res an \code{igraph} object that contains the AOPN -- a graph
-#' of the key events and their relationships.
+#' @return res an result object.
 #'
 #' @examples
+#' \dontrun{
 #' x <- get_aopn("Steatosis")
 #' cytoscape_aopn <- toCytoscape(x)
 #' send_aopn(cytoscape_aopn)
+#'}
 #'
 #' @import igraph
+#' @import httr
 #'
 #' @export
-send_aopn <- function(cytoscape_aopn, base.url = "http://localhost:1234/v1"){
-  network_url <- paste(base.url, "networks", sep="/")
-  res <- POST(url=network.url, body=cytoscape_aopn, encode="json")
+send_aopn <- function(cytoscape_aopn, url = "http://localhost:1234/v1"){
+  network_url <- paste(url, "networks", sep="/")
+  res <- httr::POST(url=network_url, body=cytoscape_aopn, encode="json")
   return(res)
 }
 
@@ -152,8 +172,10 @@ send_aopn <- function(cytoscape_aopn, base.url = "http://localhost:1234/v1"){
 #' @return aopn_kes a \code{vector} object that contains the AOPN key events
 #'
 #' @examples
+#' \dontrun{
 #' x <- get_aopn("Steatosis")
 #' get_aopn_kes(x)
+#'}
 #'
 #' @import igraph
 #'
@@ -183,16 +205,19 @@ get_aopn_kes <- function(aopn_graph){
 #' associated data
 #'
 #' @examples
+#' \dontrun{
 #' x <- get_aopn("Steatosis")
 #' aopn_kes <- get_aopn_kes(x)
 #' expression_data <- c(2, 10, 10, NA, 3, 1, 1, 3, 2, 3, 2)
-#' associate_data_aopn(aopn_graph=x, expression_data)
+#' associate_data_aopn(expression_data, x)
+#'}
 #'
 #' @import igraph
 #'
 #' @export
 associate_data_aopn <- function(x, aopn_graph){
   V(aopn_graph)$data <- x
+  return(aopn_graph)
 }
 
 #toCytoscape --------------------------------------
@@ -208,10 +233,13 @@ associate_data_aopn <- function(x, aopn_graph){
 #' @return cytoscape_aopn a \code{character} object that contains the JSON encoded AOPN
 #'
 #' @examples
+#' \dontrun{
 #' x <- get_aopn("Steatosis")
 #' cytoscape_aopn <- toCytoscape(x)
+#'}
 #'
 #' @import igraph
+#' @import RJSONIO
 #'
 #' @export
 toCytoscape <- function (igraphobj) {
@@ -323,11 +351,11 @@ getCommunityEdge <- function(g, community) {
 #'
 #' Maps attributes.
 #'
-#' @param attr.names
+#' @param attr.names the attribute names
 #'
-#' @param all.attr
+#' @param all.attr all of the attributes
 #'
-#' @param i
+#' @param i not sure
 #'
 #' @return attr
 #'
